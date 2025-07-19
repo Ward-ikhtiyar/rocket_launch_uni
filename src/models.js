@@ -40,3 +40,18 @@ export const loadSite=(scene)=>{
         console.error('Error loading model:', error);
     });
 }
+
+export const loadParachute = (scene) => {
+    return new Promise((resolve, reject) => {
+        loader.load('public/models/parachute/scene.gltf', (gltf) => {
+            const model = gltf.scene;
+            model.position.set(-10, -108, 20); 
+            model.scale.set(12, 12, 12);
+            scene.add(model);
+            resolve(model); 
+        }, undefined, (error) => {
+            console.error('Error loading model:', error);
+            reject(error);
+        });
+    });
+};

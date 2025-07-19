@@ -1,11 +1,13 @@
-// Rocket Physics Variables - exported for UI access
-export let rocket_mass = 10000;       // وزن الصاروخ
-export let fuel_mass = 30000;             // وزن الوقود
-export let burnRate = 500;               // معدل حرق الوقود
-export let isp = 350;                    // حسب نوع القود في هذه الحالة هو O2H2
-export let g0 = 9.81;                     // جاذبية
-export let Cd = 0.5;                     // معامل مقاومة الشكل
-export let P = 1.225;                  // كثافة الهواء 
+import { changeValues } from "./controls";
+import { reRenderScene } from "./main";
+
+export let rocket_mass;       // وزن الصاروخ
+export let fuel_mass;             // وزن الوقود
+export let burnRate;               // معدل حرق الوقود
+export let isp;                    // حسب نوع القود في هذه الحالة هو O2H2
+export let g0;                     // جاذبية
+export let Cd;                     // معامل مقاومة الشكل
+export let P;                  // كثافة الهواء 
 export let diameter = 2;                 // نصف قطر المقطع العرضي
 export let A = Math.PI * (diameter / 2) ** 2;
 let velocity=0;                   //سرعة الصاروخ
@@ -17,8 +19,12 @@ let previousT;
 let animation_active = false;
 let initial_rocket_y;
 let rocket_ref;
+let camera_ref;
+let parachute_ref;
+let parachute_deployed=false;
+export let parachute_Cd;
+export let parachute_diameter;
 
-// Function to update physics parameters from UI
 export function updatePhysicsParameters(newParams) {
     rocket_mass = newParams.rocket_mass;
     fuel_mass = newParams.fuel_mass;
@@ -27,25 +33,17 @@ export function updatePhysicsParameters(newParams) {
     g0 = newParams.g0;
     Cd = newParams.Cd;
     P = newParams.P;
+    parachute_Cd=newParams.parachute_Cd;
+    parachute_diameter=newParams.parachute_diameter;
     diameter = newParams.diameter;
     A = Math.PI * (diameter / 2) ** 2;
+    console.log(rocket_mass);
+    console.log(fuel_mass);
+    console.log(burnRate);
+    console.log(g0);
 }
 
-// Function to get current physics parameters for UI
-export function getPhysicsParameters() {
-    return {
-        rocket_mass,
-        fuel_mass,
-        burnRate,
-        isp,
-        g0,
-        Cd,
-        P,
-        diameter
-    };
-}
 
-// Function to reset to default values
 export function resetToDefaults() {
     rocket_mass = 10000;
     fuel_mass = 30000;
@@ -61,7 +59,8 @@ export function resetToDefaults() {
 export function calculateRocketSpeed(deltaTime){
 let total_mass=rocket_mass+fuel_mass;
 let weight=total_mass*g0;
-let drag=0.5*P*velocity**2*Cd*A* Math.sign(velocity);
+let drag = 0.5 * P * velocity * Math.abs(velocity) * Cd * A;
+
 // let thrust=burnRate*(isp*g0)+(Pe-P0)*(A_throat*Ae);
 let thrust=fuel_mass>0?(isp*g0)*burnRate:0;
 let netForce=thrust-weight-drag;
@@ -85,31 +84,55 @@ function animate() {
     const deltaTime = currentT - previousT;
     previousT = currentT;
 
-    const v = calculateRocketSpeed(deltaTime);
+    let v = calculateRocketSpeed(deltaTime);
 
     if (fuel_mass > 0) {
         fuel_mass -= burnRate * deltaTime;
     } else {
         fuel_mass = 0;
     }
+    console.log(`fuel mass is :${fuel_mass}`);
      
     console.log(`Rocket Speed is :${v}`);
-    if (rocket_ref && altitude < 100000) {
+
+    if (rocket_ref && altitude < 100000 && altitude >=0) {
         altitude += v * deltaTime;
-        rocket_ref.position.y = initial_rocket_y + altitude/50;
+        rocket_ref.position.y = initial_rocket_y + altitude;
+        camera_ref.position.y = initial_rocket_y + altitude;
+        parachute_ref.position.y=initial_rocket_y+20 +altitude;
+         if (v < 0 && parachute_deployed === false) {
+    parachute_deployed = true;
+    parachute_ref.visible = true;
+    Cd = parachute_Cd;
+    diameter = parachute_diameter;
+    A = Math.PI * (diameter / 2) ** 2; 
+    reRenderScene();
+}
+
+    
+        reRenderScene();
     } else {
         animation_active = false; 
     }
+    if(altitude<=0){
+        v=0;
+        parachute_deployed=false;
+        parachute_ref.visible=false;
+        reRenderScene();
+
+    }
+    changeValues(altitude,v,fuel_mass,diameter,Cd);
 }
 
-export function animateRocketUp(rocket) {
+export function animateRocketUp(rocket,camera,parachute) {
     if (animation_active) return; 
 
+    camera_ref=camera;
     rocket_ref = rocket;
+    parachute_ref=parachute;
     initial_rocket_y = rocket.position.y;
     velocity = 0;
-    altitude = 0;
-    fuel_mass = 30000; 
+    altitude = 0; 
     previousT = performance.now() / 1000;
     animation_active = true;
     

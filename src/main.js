@@ -4,8 +4,9 @@ import { removeAll } from 'three/examples/jsm/libs/tween.module.js';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js';
 import { skyTexture } from './textures.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { loadRocket,loadLandingPad,loadSite } from './models.js';
+import { loadRocket,loadLandingPad,loadSite,loadParachute } from './models.js';
 import { animateRocketUp } from './physics.js';
+import './controls.js';
 
 const scene = new THREE.Scene();
 const sphereMaterial=new THREE.MeshStandardMaterial({map:skyTexture,side:THREE.DoubleSide});
@@ -16,7 +17,11 @@ sphere.position.x=10;
 sphere.scale.y = 3; 
 scene.add(sphere);
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.5, 1000);
-camera.position.z = 5;
+camera.position.z = 25;
+camera.position.x=50;
+camera.position.y=-135;
+camera.lookAt(10, -128, 20);
+
 scene.add(camera);
 
 const canvas = document.querySelector('.threejs');
@@ -66,7 +71,6 @@ window.addEventListener('keydown', (event) => {
         break;
         case "KeyH":
             animateRocketUp(rocket);
-            
             break;
     }
 });
@@ -108,7 +112,7 @@ window.addEventListener('resize', () => {
 });
 
 window.addEventListener('click', () => {
-    controls.lock();
+    // controls.lock();
 });
 
 const reLoop = () => {
@@ -132,27 +136,31 @@ scene.add(light);
 let rocketPosition={x:-10, y:-128, z:20};
 
 let rocket; 
+let parachute;
 
 loadRocket(scene, rocketPosition).then((loadedRocket) => {
     rocket = loadedRocket;
 
 });
 
+loadParachute(scene).then((loadedParachute)=>{
+parachute=loadedParachute;
+parachute.visible=false;
+});
+ 
+
+
+export function reRenderScene(){
+    renderer.render(scene,camera);
+}
+
+export function launchRocket(){
+    console.log('wrad');
+    animateRocketUp(rocket,camera,parachute);
+}
+
 loadLandingPad(scene);
 loadSite(scene);
-// function animateRocketUp() {
-//     function animate() {
-//         requestAnimationFrame(animate);
-//         if (rocket && rocket.position.y < 1000) {
-//             rocket.position.y += 0.1;
-//         }
-//     }
-
-//     animate();
-// }
-
-
-
 reLoop();
 
 
