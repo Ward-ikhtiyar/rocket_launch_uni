@@ -10,11 +10,15 @@ import './controls.js';
 
 const scene = new THREE.Scene();
 const sphereMaterial=new THREE.MeshStandardMaterial({map:skyTexture,side:THREE.DoubleSide});
-const sphere=new THREE.Mesh(new THREE.SphereGeometry(120, 90, 35), sphereMaterial);
+// const sphere=new THREE.Mesh(new THREE.SphereGeometry(180, 150,35), sphereMaterial);
+const sphere=new THREE.Mesh(new THREE.SphereGeometry(180, 150,35), sphereMaterial);
 
 sphere.position.y=-32;
 sphere.position.x=10;
-sphere.scale.y = 3; 
+sphere.scale.y = 1.5; 
+sphere.scale.x = 1.5; 
+sphere.scale.z = 1.5; 
+
 scene.add(sphere);
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.5, 1000);
 camera.position.z = 25;
@@ -40,7 +44,7 @@ const moveState = {
     fast:false,
 
 };
-const MOVE_SPEED = 0.3;
+const MOVE_SPEED = 0.7;
 const FAST_MOVE_SPEED = 0.1;
 
 window.addEventListener('keydown', (event) => {
@@ -112,7 +116,7 @@ window.addEventListener('resize', () => {
 });
 
 window.addEventListener('click', () => {
-    // controls.lock();
+    controls.lock();
 });
 
 const reLoop = () => {
@@ -130,9 +134,17 @@ const reLoop = () => {
     window.requestAnimationFrame(reLoop);
     renderer.render(scene, camera);
 };
-
-const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
-scene.add(light);
+const sunLight = new THREE.DirectionalLight(0xffffff, 4.0); 
+sunLight.position.set(200, 300, -200); 
+sunLight.castShadow = true;          
+// const sunLightHelper=new THREE.DirectionalLightHelper(sunLight,1);
+// scene.add(sunLightHelper);
+scene.add(sunLight);
+// scene.add(sunLightHelper);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+// const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
+// scene.add(light);
 let rocketPosition={x:-10, y:-128, z:20};
 
 let rocket; 

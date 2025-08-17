@@ -29,13 +29,24 @@ export const loadLandingPad=(scene)=>{
         console.error('Error loading model:', error);
     });
 }
+// export const loadSite=(scene)=>{
+//     loader.load('public/models/site/scene.gltf', (gltf) => {
+//         const model = gltf.scene;
+//         scene.add(model);
+//         model.rotation.x = -Math.PI/2;
+//         model.position.set(0, -100, 0); 
+//         model.scale.set(1, 1, 1);
+//     }, undefined, (error) => {
+//         console.error('Error loading model:', error);
+//     });
+// }
 export const loadSite=(scene)=>{
-    loader.load('public/models/site/scene.gltf', (gltf) => {
+    loader.load('public/models/island/scene.gltf', (gltf) => {
         const model = gltf.scene;
         scene.add(model);
-        model.rotation.x = -Math.PI/2;
-        model.position.set(0, -100, 0); 
-        model.scale.set(1, 1, 1);
+        // model.rotation.x = -Math.PI/2;
+        model.position.set(-45, -128, -40); 
+        model.scale.set(200, 200, 200);
     }, undefined, (error) => {
         console.error('Error loading model:', error);
     });
