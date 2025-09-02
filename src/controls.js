@@ -59,25 +59,25 @@ document.getElementById('toggle-btn').addEventListener('click', () => {
     }
 });
 
-export function changeValues(alt,vel,fuel_mass,diameter,Cd){
+export function changeValues(alt,vel,fuel_mass,diameter,Cd,airDensity,layerName){
     console.log('Updating values:', alt, vel, fuel_mass);
     document.getElementById("altitude-value").textContent = Math.round(alt).toFixed(2);
     document.getElementById("velocity-value").textContent = Math.round(vel).toFixed(2);
     document.getElementById("fuel-value").textContent = Math.round(fuel_mass);
     document.getElementById('diameter-value').textContent=diameter;
     document.getElementById('drag-coefficient-value').textContent=Cd;
-
+    document.getElementById("layer-value").textContent = layerName;
+    document.getElementById("air-density-value").textContent = airDensity.toFixed(7);
+    // let layer = "Ground";
+    // if (alt > 11000) layer = "Stratosphere";
+    // else if (alt > 0) layer = "Troposphere";
     
-    let layer = "Ground";
-    if (alt > 11000) layer = "Stratosphere";
-    else if (alt > 0) layer = "Troposphere";
+    // document.getElementById("layer-value").textContent = layer;
     
-    document.getElementById("layer-value").textContent = layer;
-    
-    let airDensity = 1.225;
-    if (alt > 0) {
-        airDensity = 1.225 * Math.exp(-alt / 7400);
-    }
-    document.getElementById("air-density-value").textContent = airDensity.toFixed(3);
+    // let airDensity = 1.225;
+    // if (alt > 0) {
+    //     airDensity = 1.225 * Math.exp(-alt / 7400);
+    // }
+    // document.getElementById("air-density-value").textContent = airDensity.toFixed(3);
 }
 

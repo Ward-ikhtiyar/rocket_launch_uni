@@ -73,6 +73,9 @@ window.addEventListener('keydown', (event) => {
        case "KeyG":
         moveState.fast=false;
         break;
+          case 'KeyP':
+        controls.lock();
+        break;
         case "KeyH":
             animateRocketUp(rocket);
             break;
@@ -102,6 +105,7 @@ window.addEventListener('keyup', (event) => {
         case 'KeyF':
             moveState.fast = false;
             break;
+      
         case 'KeyG':
             moveState.fast = true;
             break;
@@ -115,9 +119,8 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-window.addEventListener('click', () => {
-    controls.lock();
-});
+
+    
 
 const reLoop = () => {
     if (controls.isLocked) {
@@ -127,7 +130,6 @@ const reLoop = () => {
         if (moveState.right) controls.moveRight(moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED);
         if (moveState.up) camera.position.y += moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED;
         if (moveState.down) camera.position.y -= moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED;
-
     }
     
     controls.update();
