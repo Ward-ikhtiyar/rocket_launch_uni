@@ -96,7 +96,7 @@ function animate() {
     console.log(`Rocket Speed is :${v}`);
 
     if (rocket_ref && altitude < 100000 && altitude >=0) {
-        altitude += v * deltaTime;
+        altitude += v * deltaTime * 0.01;
         rocket_ref.position.y = initial_rocket_y + altitude;
         camera_ref.position.y = initial_rocket_y + altitude;
         parachute_ref.position.y=initial_rocket_y+20 +altitude;
