@@ -527,7 +527,7 @@
       "componentType": 5126,
       "count": 65532,
       "max": [
-        0.11157999932765961,
+        0.1115799993276596,
         -0.7902830243110657,
         0.12874799966812134
       ],
@@ -981,6 +981,9 @@
     },
     {
       "uri": "textures/M_Booster_2_specularf0.png"
+    },
+    {
+      "uri": "flag.png"
     }
   ],
   "materials": [
@@ -1261,6 +1264,17 @@
           "index": 33
         }
       }
+    },
+    {
+      "name": "FlagMaterial",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 36
+        },
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.8
+      },
+      "doubleSided": true
     }
   ],
   "meshes": [
@@ -1435,7 +1449,7 @@
             "TEXCOORD_0": 53
           },
           "indices": 54,
-          "material": 0,
+          "material": 9,
           "mode": 4
         }
       ]
@@ -1760,6 +1774,10 @@
     {
       "sampler": 0,
       "source": 35
+    },
+    {
+      "sampler": 0,
+      "source": 36
     }
   ]
 }
