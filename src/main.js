@@ -168,7 +168,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 // const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
 // scene.add(light);
-let rocketPosition = { x: -10, y: -128, z: 20 };
+let rocketPosition = { x: 20, y: -128, z: 20 };
 
 let rocket;
 let parachute;

@@ -222,9 +222,9 @@ function animate() {
 
     if (rocket_ref && altitude < 100000 && altitude >=0) {
         altitude += v * deltaTime;
-        positionX += vx * deltaTime;
+        // positionX += vx * deltaTime;
         rocket_ref.position.y = initial_rocket_y + altitude;     
-        rocket_ref.position.x = positionX;
+        // rocket_ref.position.x = positionX;
         camera_ref.position.y = initial_rocket_y + altitude;
         parachute_ref.position.y=initial_rocket_y+20 +altitude;
          if (v < 0 && parachute_deployed === false) {
