@@ -69,7 +69,7 @@ export const loadSite = (scene) => {
       scene.add(model);
       // model.rotation.x = -Math.PI/2;
       model.position.set(-45, -128, -40);
-      model.scale.set(250, 250, 250);
+      model.scale.set(200, 200, 200);
       model.traverse((child) => {
         if (child.isMesh) {
           child.material.fog = true; // ✅ هذا يخلي الضباب يطبق على هذا الجسم
