@@ -253,7 +253,7 @@ function animate() {
       earth_ref.visible = false;
       earth1_deployed = true;
     }
-    if (altitude < 1000 && parachute_deployed === false) {
+    if (altitude < 100 && parachute_deployed === false) {
       parachute_deployed = true;
       parachute_ref.visible = true;
       Cd = parachute_Cd;
