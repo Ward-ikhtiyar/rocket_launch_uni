@@ -11,7 +11,6 @@ import {
   loadParachute,
   earth,
   stars,
-
 } from "./models.js";
 import { animateRocketUp } from "./physics.js";
 import "./controls.js";
@@ -68,70 +67,71 @@ const moveState = {
 const MOVE_SPEED = 0.7;
 const FAST_MOVE_SPEED = 0.1;
 
-window.addEventListener('keydown', (event) => {
-    switch (event.code) {
-        case 'KeyW':
-            moveState.forward = true;
-            break;
-        case 'KeyS':
-            moveState.backward = true;
-            break;
-        case 'KeyA':
-            moveState.left = true;
-            break;
-        case 'KeyD':
-            moveState.right = true;
-            break;
-        case 'KeyQ':
-            moveState.up = true;
-            break;
-        case 'ShiftLeft':
-            moveState.down = true;
-            break;
-       case "KeyF":
-        moveState.fast=true;
-        break;
-       case "KeyG":
-        moveState.fast=false;
-        break;
-          case 'KeyP':
-        controls.lock();
-        break;
-        case "KeyH":
-            animateRocketUp(rocket);
-            break;
-    }
+window.addEventListener("keydown", (event) => {
+  switch (event.code) {
+
+    case "KeyW":
+      console.log('mohammed')
+      moveState.forward = true;
+      break;
+    case "KeyS":
+      moveState.backward = true;
+      break;
+    case "KeyA":
+      moveState.left = true;
+      break;
+    case "KeyD":
+      moveState.right = true;
+      break;
+    case "KeyQ":
+      moveState.up = true;
+      break;
+    case "ShiftLeft":
+      moveState.down = true;
+      break;
+    case "KeyF":
+      moveState.fast = true;
+      break;
+    case "KeyG":
+      moveState.fast = true;
+      break;
+    case "KeyP":
+      controls.lock();
+      break;
+    case "KeyH":
+      animateRocketUp(rocket);
+      break;
+  }
 });
 
-window.addEventListener('keyup', (event) => {
-    switch (event.code) {
-        case 'KeyW':
-            moveState.forward = false;
-            break;
-        case 'KeyS': 
-            moveState.backward = false;
-            break;
-        case 'KeyA':
-            moveState.left = false;
-            break;
-        case 'KeyD':
-            moveState.right = false;
-            break;
-        case 'KeyQ':
-            moveState.up = false;
-            break;
-        case 'ShiftLeft':
-            moveState.down = false;
-            break;
-        case 'KeyF':
-            moveState.fast = false;
-            break;
-      
-        case 'KeyG':
-            moveState.fast = true;
-            break;
+window.addEventListener("keyup", (event) => {
+  switch (event.code) {
+    case "KeyW":
+      moveState.forward = false;
+      break;
+    case "KeyS":
+      moveState.backward = false;
+      break;
+    case "KeyA":
+      moveState.left = false;
+      break;
+    case "KeyD":
+      moveState.right = false;
+      break;
+    case "KeyQ":
+      moveState.up = false;
+      break;
+    case "ShiftLeft":
+      moveState.down = false;
+      break;
+    case "KeyF":
+      moveState.fast = false;
+      break;
 
-    }
+    case "KeyG":
+      moveState.fast = true;
+      break;
+  }
 });
 
 window.addEventListener("resize", () => {
@@ -140,22 +140,25 @@ window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-
-    
-
 const reLoop = () => {
-    if (controls.isLocked) {
-        if (moveState.forward) controls.moveForward(moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED);
-        if (moveState.backward) controls.moveForward(-(moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED));
-        if (moveState.left) controls.moveRight(-(moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED));
-        if (moveState.right) controls.moveRight(moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED);
-        if (moveState.up) camera.position.y += moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED;
-        if (moveState.down) camera.position.y -= moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED;
-    }
-    
-    controls.update();
-    window.requestAnimationFrame(reLoop);
-    renderer.render(scene, camera);
+  if (controls.isLocked) {
+    if (moveState.forward)
+      controls.moveForward(moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED);
+    if (moveState.backward)
+      controls.moveForward(-(moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED));
+    if (moveState.left)
+      controls.moveRight(-(moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED));
+    if (moveState.right)
+      controls.moveRight(moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED);
+    if (moveState.up)
+      camera.position.y += moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED;
+    if (moveState.down)
+      camera.position.y -= moveState.fast ? FAST_MOVE_SPEED : MOVE_SPEED;
+  }
+
+  controls.update();
+  window.requestAnimationFrame(reLoop);
+  renderer.render(scene, camera);
 };
 const sunLight = new THREE.DirectionalLight(0xffffff, 4.0);
 sunLight.position.set(200, 300, -200);
@@ -168,10 +171,11 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 // const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
 // scene.add(light);
-let rocketPosition = { x: 20, y: -128, z: 20 };
+let rocketPosition = { x: -10, y: -128, z: 20 };
 
 let rocket;
 let parachute;
+let earth1;
 
 loadRocket(scene, rocketPosition).then((loadedRocket) => {
   rocket = loadedRocket;
@@ -181,18 +185,21 @@ loadParachute(scene).then((loadedParachute) => {
   parachute = loadedParachute;
   parachute.visible = false;
 });
-
+earth(scene).then((earth_ref) => {
+  earth1 = earth_ref;
+  earth_ref.visible = false
+});
 export function reRenderScene() {
   renderer.render(scene, camera);
 }
 
 export function launchRocket() {
   console.log("wrad");
-  animateRocketUp(rocket, camera, parachute);
+  animateRocketUp(rocket, camera, parachute, earth1);
 }
 
 loadLandingPad(scene);
 loadSite(scene);
-earth(scene);
+
 stars(scene);
 reLoop();
