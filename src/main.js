@@ -43,10 +43,10 @@ const camera = new THREE.PerspectiveCamera(
   0.5,
   1000
 );
-camera.position.z = 25;
-camera.position.x = 50;
-camera.position.y = -135;
-camera.lookAt(10, -128, 20);
+camera.position.z = 80;
+camera.position.x = -10;
+camera.position.y = -130;
+camera.lookAt(-10, -128, 20);
 
 scene.add(camera);
 
@@ -168,7 +168,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 // const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1);
 // scene.add(light);
-let rocketPosition = { x: 20, y: -128, z: 20 };
+let rocketPosition = { x: -10, y: -128, z: 20 };
 
 let rocket;
 let parachute;

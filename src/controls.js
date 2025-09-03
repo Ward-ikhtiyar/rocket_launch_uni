@@ -1,4 +1,4 @@
-import { animateRocketUp,parachute_Cd,parachute_diameter,resetToDefaults,updatePhysicsParameters } from './physics.js';
+import { animateRocketUp,parachute_diameter,resetToDefaults,updatePhysicsParameters } from './physics.js';
 import { launchRocket } from './main.js';
 
     document.getElementById('apply-changes').addEventListener('click', () => {
@@ -13,7 +13,7 @@ import { launchRocket } from './main.js';
             Cd:parseFloat(document.getElementById('drag-coefficient').value),
             diameter : parseFloat(document.getElementById('diameter').value),
             P:parseFloat(document.getElementById('air-density').value),
-            parachute_Cd:parseFloat(document.getElementById('parachute-drag-coefficient').value),
+            parachute_Cd_max:parseFloat(document.getElementById('parachute-drag-coefficient').value),
             parachute_diameter:parseFloat(document.getElementById('parachute-diameter').value),
         }
             console.log(rocket);

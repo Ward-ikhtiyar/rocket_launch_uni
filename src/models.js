@@ -15,8 +15,8 @@ export const loadRocket = (scene, position) => {
         scene.add(model);
         resolve(model);
         model.traverse((child) => {
-        if (child.isMesh) {
-          child.material.fog = false; // ✅ هذا يخلي الضباب يطبق على هذا الجسم
+        if (child.isMesh) { 
+          child.material.fog = false;  
         }
       });
       },
