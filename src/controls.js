@@ -15,6 +15,10 @@ import { launchRocket } from './main.js';
             P:parseFloat(document.getElementById('air-density').value),
             parachute_Cd_max:parseFloat(document.getElementById('parachute-drag-coefficient').value),
             parachute_diameter:parseFloat(document.getElementById('parachute-diameter').value),
+            wind_velocityX:parseFloat(document.getElementById('Wind-Speed-X').value),
+            wind_velocityZ:parseFloat(document.getElementById('Wind-Speed-Z').value),
+
+
         }
             console.log(rocket);
         updatePhysicsParameters(rocket);
@@ -33,6 +37,8 @@ document.getElementById('reset-defaults').addEventListener('click', () => {
     document.getElementById('air-density').value = 1.225;
     document.getElementById('parachute-drag-coefficient')=1.5;
     document.getElementById('parachute-diameter')=3;
+    document.getElementById('Wind-Speed-X')=0.1;
+    document.getElementById('Wind-Speed-Z')=0.1;
     resetToDefaults();
 });
 
@@ -59,15 +65,19 @@ document.getElementById('toggle-btn').addEventListener('click', () => {
     }
 });
 
-export function changeValues(alt,vel,fuel_mass,diameter,Cd,airDensity,layerName){
+export function changeValues(alt,vel,fuel_mass,diameter,Cd,airDensity,layerName,windSpeedX,windSpeedZ){
     console.log('Updating values:', alt, vel, fuel_mass);
     document.getElementById("altitude-value").textContent = Math.round(alt * 100).toFixed(2);
     document.getElementById("velocity-value").textContent = Math.round(vel).toFixed(2);
     document.getElementById("fuel-value").textContent = Math.round(fuel_mass);
     document.getElementById('diameter-value').textContent=diameter;
-    document.getElementById('drag-coefficient-value').textContent=Cd;
+    document.getElementById('drag-coefficient').textContent=Cd;
     document.getElementById("layer-value").textContent = layerName;
     document.getElementById("air-density-value").textContent = airDensity.toFixed(7);
+    document.getElementById("windX-value").textContent = windSpeedX.toFixed(7);
+    document.getElementById("windZ-value").textContent = windSpeedZ.toFixed(7);
+
+
     // let layer = "Ground";
     // if (alt > 11000) layer = "Stratosphere";
     // else if (alt > 0) layer = "Troposphere";

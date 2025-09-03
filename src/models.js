@@ -72,7 +72,7 @@ export const loadSite = (scene) => {
       model.scale.set(200, 200, 200);
       model.traverse((child) => {
         if (child.isMesh) {
-          child.material.fog = true; // ✅ هذا يخلي الضباب يطبق على هذا الجسم
+          child.material.fog = true; 
         }
       });
     },

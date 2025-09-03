@@ -32,6 +32,7 @@ let rocket_ref;
 let camera_ref;
 let parachute_ref;
 let parachute_deployed = false;
+
 let temperature = 288.15;
 let pressure = 101325;
 let air_molar_mass = 0.0289644; //kg/mol
@@ -169,6 +170,8 @@ export function updatePhysicsParameters(newParams) {
     parachute_Cd_max=newParams.parachute_Cd_max;
     parachute_diameter=newParams.parachute_diameter;
     diameter = newParams.diameter;
+    velocityX=newParams.wind_velocityX;
+    velocityZ=newParams.wind_velocityZ;
     A = Math.PI * (diameter / 2) ** 2;
     console.log(rocket_mass);
     console.log(fuel_mass);
@@ -321,7 +324,7 @@ function animate() {
   console.log(`air density is :${P}`);
 
     if (rocket_ref && altitude < 100000 && altitude >=0) {
-        altitude += velocity * deltaTime;
+        altitude += velocity * deltaTime * 0.1;
         positionX += velocityX * deltaTime;
         positionZ += velocityZ * deltaTime;
         rocket_ref.position.y = initial_rocket_y + altitude;     
@@ -334,7 +337,7 @@ function animate() {
         parachute_ref.position.z = positionZ;
 
 
-         if (velocity < 0 && parachute_deployed === false&& altitude<=5000) {
+         if (velocity < 0 && parachute_deployed === false&& altitude<=100) {
             // parachute_deployed = true;
             // parachute_ref.visible = true;
             // Cd = parachute_Cd;
@@ -359,7 +362,7 @@ function animate() {
      if (altitude > maxAltitude) maxAltitude = altitude;
     if (Math.abs(velocity) > maxVelocity) maxVelocity = Math.abs(velocity);
     if (P < minDensity) minDensity = P;
-    changeValues(altitude,velocity,fuel_mass,diameter,Cd,P,layerName);
+    changeValues(altitude,velocity,fuel_mass,diameter,Cd,P,layerName,velocityX,velocityZ);
 }
 
 export function animateRocketUp(rocket,camera,parachute) {
