@@ -12,20 +12,23 @@ export let diameter = 2; // نصف قطر المقطع العرضي
 export let A = Math.PI * (diameter / 2) ** 2;
 export let A_side = diameter;
 let altitude = 0;
-let layerName="Troposphere";
-let wind_velocity=5;
-let wind_velocityX=0;
-let wind_velocityZ=0;
-let velocityX=0.2;            //سرعة الصاروخ على المحور x
-let velocityZ=0.2;            //سرعة الصاروع على المحور z
-let velocity=0;                 //سرعة الصاروخ
-let Pe=0;                         // الضغط عند فوهة العادم
-let P0=0;                         // الضغط الخارجي 
-let Ae=0;                         //نسبة توسع الفوهة  
-let A_throat=0;                   //مساحة عنق الفوهة
+let layerName = "Troposphere";
+let wind_velocity = 5;
+let wind_velocityX = 0;
+let wind_velocityZ = 0;
+let velocityX = 0.2;            //سرعة الصاروخ على المحور x
+let velocityZ = 0.2;            //سرعة الصاروع على المحور z
+let velocity = 0;                 //سرعة الصاروخ
+let Pe = 0;                         // الضغط عند فوهة العادم
+let P0 = 0;                         // الضغط الخارجي 
+let Ae = 0;                         //نسبة توسع الفوهة  
+let A_throat = 0;                   //مساحة عنق الفوهة
+let earth_ref;
+let earth_deployed = false
+let earth1_deployed = false
 let previousT;
-let positionX = 0;  
-let positionZ = 0;       
+let positionX = 0;
+let positionZ = 0;
 let animation_active = false;
 let initial_rocket_y;
 let rocket_ref;
@@ -41,15 +44,15 @@ let poweredAscentTime = 0;
 let coastingAscentTime = 0;
 let freeFallTime = 0;
 let parachuteTime = 0;
-let minDensity=0;
-let maxVelocity=0;
-let maxAltitude =0;
-let earth_radius=6731000; //نصف قطر الارض بالمتر
+let minDensity = 0;
+let maxVelocity = 0;
+let maxAltitude = 0;
+let earth_radius = 6731000; //نصف قطر الارض بالمتر
 export let parachute_diameter;
 let parachute_A_max = 0;
-let parachute_Cd_max = 1.75; 
-let parachute_Cd_min = 0.2;  
-let parachute_opening_tau = 2; 
+let parachute_Cd_max = 1.75;
+let parachute_Cd_min = 0.2;
+let parachute_opening_tau = 2;
 let parachute_inflated = false;
 let parachute_deploy_time = 0;
 
@@ -106,19 +109,19 @@ const atmosphereLayers = [
 ];
 
 function computeParachuteAFromDiameter(d) {
- return Math.PI * (d / 2) ** 2;
+  return Math.PI * (d / 2) ** 2;
 }
 export function deployParachute() {
- if (parachute_deployed) return;
- parachute_deployed = true;
- parachute_deploy_time = performance.now() / 1000;
- parachute_A_max = computeParachuteAFromDiameter(parachute_diameter || 10); // افتراضي قطر
- parachute_inflated = false;
- parachute_ref.visible = true;
+  if (parachute_deployed) return;
+  parachute_deployed = true;
+  parachute_deploy_time = performance.now() / 1000;
+  parachute_A_max = computeParachuteAFromDiameter(parachute_diameter || 10); // افتراضي قطر
+  parachute_inflated = false;
+  parachute_ref.visible = true;
 }
 function parachuteInflationFactor(timeSinceDeploy) {
- if (timeSinceDeploy <= 0) return 0;
- return 1 - Math.exp(-timeSinceDeploy / parachute_opening_tau);
+  if (timeSinceDeploy <= 0) return 0;
+  return 1 - Math.exp(-timeSinceDeploy / parachute_opening_tau);
 }
 
 
@@ -140,43 +143,43 @@ function calculateGravity(altitude) {
   return currentGarvity;
 }
 
-function calculateAirDensity(altitude){
-    let currentLayer=getCurrentLayer(altitude);
-    
-    if (!currentLayer) return P; 
-    
-    layerName=currentLayer.name;
+function calculateAirDensity(altitude) {
+  let currentLayer = getCurrentLayer(altitude);
 
-    let currentLayerBaseAltitude=currentLayer.altitudeRange[0];
-    temperature=currentLayer.baseTemperature+currentLayer.lapseRate*(altitude-currentLayerBaseAltitude);
-    if(currentLayer.lapseRate!==0){
-        pressure=currentLayer.basePressure*Math.pow(currentLayer.baseTemperature/temperature,g0*air_molar_mass/(currentLayer.lapseRate*R))
-    }
-    if(currentLayer.lapseRate===0){
-        pressure=currentLayer.basePressure*Math.exp(-g0*air_molar_mass*(altitude-currentLayerBaseAltitude)/(R*currentLayer.baseTemperature))
-    }
-    let newAirDensity=pressure/((R/air_molar_mass)*temperature);
-    return newAirDensity
+  if (!currentLayer) return P;
+
+  layerName = currentLayer.name;
+
+  let currentLayerBaseAltitude = currentLayer.altitudeRange[0];
+  temperature = currentLayer.baseTemperature + currentLayer.lapseRate * (altitude - currentLayerBaseAltitude);
+  if (currentLayer.lapseRate !== 0) {
+    pressure = currentLayer.basePressure * Math.pow(currentLayer.baseTemperature / temperature, g0 * air_molar_mass / (currentLayer.lapseRate * R))
+  }
+  if (currentLayer.lapseRate === 0) {
+    pressure = currentLayer.basePressure * Math.exp(-g0 * air_molar_mass * (altitude - currentLayerBaseAltitude) / (R * currentLayer.baseTemperature))
+  }
+  let newAirDensity = pressure / ((R / air_molar_mass) * temperature);
+  return newAirDensity
 }
 
 export function updatePhysicsParameters(newParams) {
-    rocket_mass = newParams.rocket_mass;
-    fuel_mass = newParams.fuel_mass;
-    burnRate = newParams.burnRate;
-    isp = newParams.isp;
-    g0 = newParams.g0;
-    Cd = newParams.Cd;
-    P = newParams.P;
-    parachute_Cd_max=newParams.parachute_Cd_max;
-    parachute_diameter=newParams.parachute_diameter;
-    diameter = newParams.diameter;
-    velocityX=newParams.wind_velocityX;
-    velocityZ=newParams.wind_velocityZ;
-    A = Math.PI * (diameter / 2) ** 2;
-    console.log(rocket_mass);
-    console.log(fuel_mass);
-    console.log(burnRate);
-    console.log(g0);
+  rocket_mass = newParams.rocket_mass;
+  fuel_mass = newParams.fuel_mass;
+  burnRate = newParams.burnRate;
+  isp = newParams.isp;
+  g0 = newParams.g0;
+  Cd = newParams.Cd;
+  P = newParams.P;
+  parachute_Cd_max = newParams.parachute_Cd_max;
+  parachute_diameter = newParams.parachute_diameter;
+  diameter = newParams.diameter;
+  velocityX = newParams.wind_velocityX;
+  velocityZ = newParams.wind_velocityZ;
+  A = Math.PI * (diameter / 2) ** 2;
+  console.log(rocket_mass);
+  console.log(fuel_mass);
+  console.log(burnRate);
+  console.log(g0);
 }
 
 export function resetToDefaults() {
@@ -199,7 +202,7 @@ function calculateRocketSpeed(deltaTime, altitude, currentTime) {
   let relVx = velocityX - wind_velocityX;
   let relVy = velocity;
   let relVz = velocityZ - wind_velocityZ;
-  let relVmag = Math.sqrt(relVx**2 + relVy**2 + relVz**2);
+  let relVmag = Math.sqrt(relVx ** 2 + relVy ** 2 + relVz ** 2);
 
   let drag_mag = 0.5 * P * Cd * A * relVmag * relVmag;
   let dragX = 0, dragY = 0, dragZ = 0;
@@ -220,6 +223,9 @@ function calculateRocketSpeed(deltaTime, altitude, currentTime) {
 
     const A_par = parachute_A_max * f;
     const Cd_par = parachute_Cd_min * (1 - f) + parachute_Cd_max * f;
+    Cd=Cd_par;
+    console.log('cd par orig' ,Cd_par)
+    console.log('cd Par os ',Cd);
     const parachute_drag = 0.5 * P * relVmag * relVmag * Cd_par * A_par;
 
     if (relVmag > 0) {
@@ -242,15 +248,15 @@ function calculateRocketSpeed(deltaTime, altitude, currentTime) {
   let az = forceZ / total_mass;
 
   velocityX += ax * deltaTime;
-  velocity  += ay * deltaTime;
+  velocity += ay * deltaTime;
   velocityZ += az * deltaTime;
 
-  console.log("altitude:", altitude, "velocity:", velocity, "drag:", drag_mag, "thrust:", thrust,"parachute_area",P);
+  console.log("altitude:", altitude, "velocity:", velocity, "drag:", drag_mag, "thrust:", thrust, "parachute_area", P);
 }
 
 
 // export function calculateRocketSpeed(deltaTime,altitude){
-    
+
 // let total_mass=rocket_mass+fuel_mass;
 // let currentGarvity=calculateGravity(altitude)
 // let weight=total_mass*currentGarvity;
@@ -296,16 +302,16 @@ function animate() {
   const deltaTime = currentT - previousT;
   previousT = currentT;
 
-    if (fuel_mass > 0) {
-        fuel_mass -= burnRate * deltaTime;
-    } else {
-        fuel_mass = 0;
-    }
-      calculateRocketSpeed(deltaTime,altitude,currentT)
-    // let v = calculateRocketSpeed(deltaTime,altitude);
-    // let vx=calculateRocketSpeedHorizontal(deltaTime);
-    // let vz=calculateRocketZSpeedHorizontal(deltaTime);
-       if (fuel_mass > 0) {
+  if (fuel_mass > 0) {
+    fuel_mass -= burnRate * deltaTime;
+  } else {
+    fuel_mass = 0;
+  }
+  calculateRocketSpeed(deltaTime, altitude, currentT)
+  // let v = calculateRocketSpeed(deltaTime,altitude);
+  // let vx=calculateRocketSpeedHorizontal(deltaTime);
+  // let vz=calculateRocketZSpeedHorizontal(deltaTime);
+  if (fuel_mass > 0) {
     poweredAscentTime += deltaTime;
   } else if (velocity > 0) {
     coastingAscentTime += deltaTime;
@@ -315,69 +321,84 @@ function animate() {
     parachuteTime += deltaTime;
   }
 
-    console.log(`fuel mass is :${fuel_mass}`);
-     
-    console.log(`Rocket Speed is :${velocity}`);
-    console.log(`Rocket XSpeed is :${velocityX}`);
-    console.log(`Rocket ZSpeed is :${velocityZ}`);
+  console.log(`fuel mass is :${fuel_mass}`);
+
+  console.log(`Rocket Speed is :${velocity}`);
+  console.log(`Rocket XSpeed is :${velocityX}`);
+  console.log(`Rocket ZSpeed is :${velocityZ}`);
 
   console.log(`air density is :${P}`);
 
-    if (rocket_ref && altitude < 100000 && altitude >=0) {
-        altitude += velocity * deltaTime * 0.1;
-        positionX += velocityX * deltaTime;
-        positionZ += velocityZ * deltaTime;
-        rocket_ref.position.y = initial_rocket_y + altitude;     
-        rocket_ref.position.x = positionX;
-          console.log("FRAME 1 CHECK: PositionX updated to " + positionX + " using deltaTime " + deltaTime)
-        rocket_ref.position.z = positionZ;
-        camera_ref.position.y = initial_rocket_y + altitude;
-        parachute_ref.position.y=initial_rocket_y+20 +altitude;
-        parachute_ref.position.x=positionX ;
-        parachute_ref.position.z = positionZ;
-
-
-         if (velocity < 0 && parachute_deployed === false&& altitude<=100) {
-            // parachute_deployed = true;
-            // parachute_ref.visible = true;
-            // Cd = parachute_Cd;
-            // diameter = parachute_diameter;
-            // A = Math.PI * (diameter / 2) ** 2; 
-            deployParachute();
-            reRenderScene();
-}
-
-        reRenderScene();
-    } else {
-        animation_active = false; 
+  if (rocket_ref && altitude < 100000 && altitude >= 0) {
+    altitude += velocity * deltaTime * 0.05;
+    positionX += velocityX * deltaTime;
+    positionZ += velocityZ * deltaTime;
+    rocket_ref.position.y = initial_rocket_y + altitude;
+    rocket_ref.position.x = positionX;
+    console.log("FRAME 1 CHECK: PositionX updated to " + positionX + " using deltaTime " + deltaTime)
+    rocket_ref.position.z = positionZ;
+    camera_ref.position.y = initial_rocket_y + altitude;
+    parachute_ref.position.y = initial_rocket_y + 20 + altitude;
+    parachute_ref.position.x = positionX;
+    parachute_ref.position.z = positionZ;
+    if (altitude > 380 && earth_deployed === false) {
+      console.log(altitude);
+      console.log("visible true");
+      earth_ref.visible = true;
+      earth_deployed = true;
     }
-    if(altitude<=0){
-        velocity=0;
-        parachute_deployed=false;
-        parachute_ref.visible=false;
-        reRenderScene();
-
+    if (
+      altitude < 380 &&
+      earth_deployed === true &&
+      earth1_deployed === false
+    ) {
+      earth_ref.visible = false;
+      earth1_deployed = true;
     }
-    console.log(`positionX is ${positionX} `);
-     if (altitude > maxAltitude) maxAltitude = altitude;
-    if (Math.abs(velocity) > maxVelocity) maxVelocity = Math.abs(velocity);
-    if (P < minDensity) minDensity = P;
-    changeValues(altitude,velocity,fuel_mass,diameter,Cd,P,layerName,velocityX,velocityZ);
-}
+    // إذا أردت نشر المظلة تلقائياً عند بداية السقوط
 
-export function animateRocketUp(rocket,camera,parachute) {
-    if (animation_active) return; 
-    camera_ref=camera;
-    rocket_ref = rocket;
-    parachute_ref=parachute;
-    initial_rocket_y = rocket.position.y;
+    if (velocity < 0 && parachute_deployed === false && altitude <= 100) {
+      // parachute_deployed = true;
+      // parachute_ref.visible = true;
+      // Cd = parachute_Cd;
+      // diameter = parachute_diameter;
+      // A = Math.PI * (diameter / 2) ** 2; 
+      deployParachute();
+      reRenderScene();
+    }
+
+    reRenderScene();
+  } else {
+    animation_active = false;
+  }
+  if (altitude <= 0) {
     velocity = 0;
-    altitude = 0;
-    positionX = 0;
-    positionZ = 0;
-    // velocityX = 0;
-    // velocityZ = 0;
-    previousT = performance.now() / 1000;
-    animation_active = true;
-    animate();
+    parachute_deployed = false;
+    parachute_ref.visible = false;
+    reRenderScene();
+
+  }
+  console.log(`positionX is ${positionX} `);
+  if (altitude > maxAltitude) maxAltitude = altitude;
+  if (Math.abs(velocity) > maxVelocity) maxVelocity = Math.abs(velocity);
+  if (P < minDensity) minDensity = P;
+  changeValues(altitude, velocity, fuel_mass, diameter, Cd, P, layerName, velocityX, velocityZ);
+}
+
+export function animateRocketUp(rocket, camera, parachute, earth) {
+  if (animation_active) return;
+  camera_ref = camera;
+  rocket_ref = rocket;
+  parachute_ref = parachute;
+  initial_rocket_y = rocket.position.y;
+  earth_ref = earth;
+  velocity = 0;
+  altitude = 0;
+  positionX = 0;
+  positionZ = 0;
+  // velocityX = 0;
+  // velocityZ = 0;
+  previousT = performance.now() / 1000;
+  animation_active = true;
+  animate();
 }

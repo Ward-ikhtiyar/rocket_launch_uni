@@ -65,13 +65,13 @@ document.getElementById('toggle-btn').addEventListener('click', () => {
     }
 });
 
-export function changeValues(alt,vel,fuel_mass,diameter,Cd,airDensity,layerName,windSpeedX,windSpeedZ){
+export function changeValues(alt,vel,fuel_mass,diameter,Cd,airDensity,layerName,windSpeedX,windSpeedZ,ascendTime){
     console.log('Updating values:', alt, vel, fuel_mass);
     document.getElementById("altitude-value").textContent = Math.round(alt * 100).toFixed(2);
     document.getElementById("velocity-value").textContent = Math.round(vel).toFixed(2);
     document.getElementById("fuel-value").textContent = Math.round(fuel_mass);
-    document.getElementById('diameter-value').textContent=diameter;
-    document.getElementById('drag-coefficient').textContent=Cd;
+    // document.getElementById('diameter-value').textContent=diameter;
+    document.getElementById('drag-coefficient-value').textContent=Cd;
     document.getElementById("layer-value").textContent = layerName;
     document.getElementById("air-density-value").textContent = airDensity.toFixed(7);
     document.getElementById("windX-value").textContent = windSpeedX.toFixed(7);
